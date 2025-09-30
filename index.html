@@ -19,13 +19,13 @@
       #unity-container{
         position:fixed !important; inset:0 !important;
         display:grid !important; place-items:center !important;
-        left:auto !important; top:auto !important; transform:none !important;
+         top:auto !important; transform:none !important;
         margin:0 !important; padding:0 !important;
       }
       #unity-canvas{
         display:block !important; background:#231F20;
-        width:auto !important; height:auto !important;
-        max-width:none !important; max-height:none !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
       }
 
       #unity-footer {
@@ -107,20 +107,20 @@
       function resizeToCover() {
         const ww = window.innerWidth;
         const wh = window.innerHeight;
-        let cssW = ww;
-        let cssH = Math.round(ww / ASPECT);
 
-        // ถ้าสูงเกินจอ → ลดลงให้พอดีความสูงแทน
-        if (cssH > wh) {
-          cssH = wh;
-          cssW = Math.round(wh * ASPECT);
+        // ยึด "ความสูง" ก่อน
+        let cssH = wh;
+        let cssW = Math.round(wh * ASPECT);
+
+        // ถ้ากว้างเกินหน้าจอ ค่อยลดไปยึดความกว้างแทน (กันล้น)
+        if (cssW > ww) {
+          cssW = ww;
+          cssH = Math.round(ww / ASPECT);
         }
 
         canvas.style.width = cssW + "px";
         canvas.style.height = cssH + "px";
-
-        // จัดกึ่งกลาง
-        canvas.style.margin = "auto";
+        canvas.style.margin = "auto"; // จัดกึ่งกลาง
       }
       window.addEventListener('resize', resizeToCover);
       // By default, Unity keeps WebGL canvas render target size matched with
