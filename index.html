@@ -105,11 +105,22 @@
       canvas.height = INTERNAL_HEIGHT;
 
       function resizeToCover() {
-        const ww = window.innerWidth, wh = window.innerHeight;
-        let cssW = ww, cssH = Math.round(ww / ASPECT);
-        if (cssH < wh) { cssH = wh; cssW = Math.round(wh * ASPECT); } // ครอปให้เต็มสูง/กว้าง
-        canvas.style.width  = cssW + "px";
+        const ww = window.innerWidth;
+        const wh = window.innerHeight;
+        let cssW = ww;
+        let cssH = Math.round(ww / ASPECT);
+
+        // ถ้าสูงเกินจอ → ลดลงให้พอดีความสูงแทน
+        if (cssH > wh) {
+          cssH = wh;
+          cssW = Math.round(wh * ASPECT);
+        }
+
+        canvas.style.width = cssW + "px";
         canvas.style.height = cssH + "px";
+
+        // จัดกึ่งกลาง
+        canvas.style.margin = "auto";
       }
       window.addEventListener('resize', resizeToCover);
       // By default, Unity keeps WebGL canvas render target size matched with
