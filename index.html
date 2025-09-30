@@ -15,17 +15,8 @@
         padding: 0;
         overflow: hidden; /* Prevents scrollbars */
       }
-      #unity-container {
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-      }
-      #unity-canvas {
-        width: 100% !important;
-        height: 100% !important;
-      }
+      #unity-container { position:fixed; inset:0; display:grid; place-items:center; }
+      #unity-canvas { background:#231F20; display:block; }
 
       #unity-footer {
         position: fixed; /* ทำให้ตำแหน่งไม่ขยับตามการเลื่อนหน้าจอ */
@@ -66,6 +57,7 @@
       // user.
       const INTERNAL_WIDTH = 1920;
       const INTERNAL_HEIGHT = 1080;
+      const ASPECT = INTERNAL_WIDTH / INTERNAL_HEIGHT;
 
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
@@ -97,7 +89,18 @@
         productVersion: "0.1",
         showBanner: unityShowBanner,
       };
+      config.matchWebGLToCanvasSize = false;
+      canvas.width = INTERNAL_WIDTH;
+      canvas.height = INTERNAL_HEIGHT;
 
+      function resizeToFit() {
+        const ww = window.innerWidth, wh = window.innerHeight;
+        let cssW = ww, cssH = Math.round(ww / ASPECT);
+        if (cssH > wh) { cssH = wh; cssW = Math.round(wh * ASPECT); }
+        canvas.style.width = cssW + "px";
+        canvas.style.height = cssH + "px";
+      }
+      window.addEventListener('resize', resizeToFit);
       // By default, Unity keeps WebGL canvas render target size matched with
       // the DOM size of the canvas element (scaled by window.devicePixelRatio)
       // Set this to false if you want to decouple this synchronization from
@@ -122,8 +125,7 @@
 
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.width = INTERNAL_WIDTH;
-        canvas.height = INTERNAL_HEIGHT;
+        
         // canvas.style.width = "960px";
         // canvas.style.height = "600px";
       }
@@ -140,6 +142,7 @@
                 fullscreenButton.onclick = () => {
                   unityInstance.SetFullscreen(1);
                 };
+                resizeToFit();
               }).catch((message) => {
                 alert(message);
               });
