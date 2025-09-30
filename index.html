@@ -13,10 +13,20 @@
         height: 100%;
         margin: 0;
         padding: 0;
+        background: #000;
         overflow: hidden; /* Prevents scrollbars */
       }
-      #unity-container { position:fixed; inset:0; display:grid; place-items:center; }
-      #unity-canvas { background:#231F20; display:block; }
+      #unity-container{
+        position:fixed !important; inset:0 !important;
+        display:grid !important; place-items:center !important;
+        left:auto !important; top:auto !important; transform:none !important;
+        margin:0 !important; padding:0 !important;
+      }
+      #unity-canvas{
+        display:block !important; background:#231F20;
+        width:auto !important; height:auto !important;
+        max-width:none !important; max-height:none !important;
+      }
 
       #unity-footer {
         position: fixed; /* ทำให้ตำแหน่งไม่ขยับตามการเลื่อนหน้าจอ */
@@ -55,9 +65,7 @@
       // Modify or remove this function to customize the visually presented
       // way that non-critical warnings and error messages are presented to the
       // user.
-      const INTERNAL_WIDTH = 1920;
-      const INTERNAL_HEIGHT = 1080;
-      const ASPECT = INTERNAL_WIDTH / INTERNAL_HEIGHT;
+
 
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
@@ -89,18 +97,21 @@
         productVersion: "0.1",
         showBanner: unityShowBanner,
       };
+
+      const INTERNAL_WIDTH = 1920, INTERNAL_HEIGHT = 1080, ASPECT = INTERNAL_WIDTH / INTERNAL_HEIGHT;
+
       config.matchWebGLToCanvasSize = false;
-      canvas.width = INTERNAL_WIDTH;
+      canvas.width  = INTERNAL_WIDTH;   // ขนาดเรนเดอร์จริง
       canvas.height = INTERNAL_HEIGHT;
 
-      function resizeToFit() {
+      function resizeToCover() {
         const ww = window.innerWidth, wh = window.innerHeight;
         let cssW = ww, cssH = Math.round(ww / ASPECT);
-        if (cssH > wh) { cssH = wh; cssW = Math.round(wh * ASPECT); }
-        canvas.style.width = cssW + "px";
+        if (cssH < wh) { cssH = wh; cssW = Math.round(wh * ASPECT); } // ครอปให้เต็มสูง/กว้าง
+        canvas.style.width  = cssW + "px";
         canvas.style.height = cssH + "px";
       }
-      window.addEventListener('resize', resizeToFit);
+      window.addEventListener('resize', resizeToCover);
       // By default, Unity keeps WebGL canvas render target size matched with
       // the DOM size of the canvas element (scaled by window.devicePixelRatio)
       // Set this to false if you want to decouple this synchronization from
@@ -131,7 +142,7 @@
       }
 
       loadingBar.style.display = "block";
-
+      resizeToCover();
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
@@ -142,7 +153,7 @@
                 fullscreenButton.onclick = () => {
                   unityInstance.SetFullscreen(1);
                 };
-                resizeToFit();
+                
               }).catch((message) => {
                 alert(message);
               });
